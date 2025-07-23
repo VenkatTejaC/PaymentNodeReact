@@ -12,8 +12,8 @@ app.post("/create-payment-intent", async (req, res) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount, // must be in the smallest currency unit (cents/paise)
-      currency: "usd", // change to 'inr' if needed
+      amount, // smallest unit (e.g., cents)
+      currency: "usd", // or "inr"
     });
 
     res.send({ clientSecret: paymentIntent.client_secret });
@@ -22,6 +22,8 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-app.listen(5000, () => {
-  console.log("Server running on http://localhost:5000");
+// ✅ FIX: Use dynamic port from environment
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
