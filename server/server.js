@@ -4,7 +4,12 @@ const cors = require("cors");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
-app.use(cors());
+
+// ✅ CORS: allow Netlify domain
+app.use(cors({
+  origin: "https://your-netlify-site.netlify.app", // <-- Replace with your real Netlify site URL
+}));
+
 app.use(express.json());
 
 app.post("/create-payment-intent", async (req, res) => {
@@ -12,8 +17,8 @@ app.post("/create-payment-intent", async (req, res) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount, // smallest unit (e.g., cents)
-      currency: "usd", // or "inr"
+      amount,
+      currency: "usd",
     });
 
     res.send({ clientSecret: paymentIntent.client_secret });
@@ -22,8 +27,8 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
-// ✅ FIX: Use dynamic port from environment
+// ✅ use dynamic PORT for Render
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

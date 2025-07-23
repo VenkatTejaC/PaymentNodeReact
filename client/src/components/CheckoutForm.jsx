@@ -27,10 +27,10 @@ export default function CheckoutForm() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:5000/create-payment-intent", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/create-payment-intent`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: Number(amount) * 100 }),
+        body: JSON.stringify({ amount: Number(amount) * 100 }), // Stripe expects amount in cents
       });
 
       const { clientSecret } = await res.json();
@@ -44,7 +44,7 @@ export default function CheckoutForm() {
       if (result.error) {
         setMessage(result.error.message);
       } else if (result.paymentIntent.status === "succeeded") {
-        setMessage("Money Sent successfully! ✅");
+        setMessage("✅ Money Sent successfully!");
         setAmount("");
 
         setTimeout(() => {
@@ -60,105 +60,96 @@ export default function CheckoutForm() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-purple-400">
-  <div className="p-10 border-[6px] border-white rounded-2xl bg-black/30 shadow-xl">
-    <form
-      onSubmit={handleSubmit}
-      style={{
-    border: "6px solid white",
-    paddingTop: "0.5rem",
-    paddingBottom: "1.5rem",
-    paddingLeft: "4rem",
-    paddingRight: "4rem",
-    borderRadius: "3rem",
-    backgroundColor: "white",
-    color: "black",
-  }}
-    >
-      <h2 className="text-2xl font-bold text-center text-black mb-6 ml-4">Send Money Safe</h2>
+      <div className="p-10 border-[6px] border-white rounded-2xl bg-black/30 shadow-xl">
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            border: "6px solid white",
+            padding: "2rem",
+            borderRadius: "2rem",
+            backgroundColor: "white",
+            color: "black",
+          }}
+        >
+          <h2 className="text-2xl font-bold text-center text-black mb-6">Send Money Safe</h2>
 
-     
-      <div className="flex flex-col mb-6">
-        <label className="text-black font-bold text-lg mb-2">Amount ($)</label>
-        <br></br>
-        <input
-          type="number"
-          placeholder=""
-          className="w-full px-5 py-4 rounded-lg border border-white bg-transparent text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
+          <div className="flex flex-col mb-6">
+            <label className="text-black font-bold text-lg mb-2">Amount ($)</label>
+            <input
+              type="number"
+              placeholder="Enter amount"
+              className="w-full px-5 py-4 rounded-lg border border-white bg-transparent text-black placeholder-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="flex flex-col gap-4 mb-6">
+            <label className="text-black font-bold text-lg">Card Details</label>
+
+            <div className="p-3 rounded-lg border border-white bg-white">
+              <CardNumberElement
+                options={{
+                  style: {
+                    base: {
+                      color: "#070707",
+                      fontSize: "16px",
+                      "::placeholder": {
+                        color: "#cccccc",
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+
+            <div className="p-3 rounded-lg border border-white bg-white">
+              <CardExpiryElement
+                options={{
+                  style: {
+                    base: {
+                      color: "#070707",
+                      fontSize: "16px",
+                      "::placeholder": {
+                        color: "#cccccc",
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+
+            <div className="p-3 rounded-lg border border-white bg-white">
+              <CardCvcElement
+                options={{
+                  style: {
+                    base: {
+                      color: "#070707",
+                      fontSize: "16px",
+                      "::placeholder": {
+                        color: "#cccccc",
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={!stripe || loading}
+            className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200 mt-6"
+          >
+            {loading ? "Processing..." : `Send $${amount || "Now"}`}
+          </button>
+
+          {message && (
+            <p className="text-center text-sm text-red-600 mt-4">{message}</p>
+          )}
+        </form>
       </div>
-        <br></br>
-      <div className="flex flex-col gap-4 mb-6">
-        <label className="text-black font-bold text-lg">Card Details</label>
-        
-
-        <div className="p-3 rounded-lg border border-white bg-white">
-          <br></br>
-          <CardNumberElement
-            options={{
-              placeholder: "Enter your card number",
-              style: {
-                base: {
-                  color: "#070707",
-                  fontSize: "16px",
-                  "::placeholder": {
-                    color: "#cccccc",
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-           <br></br>
-        <div className="p-3 rounded-lg border border-white bg-white">
-          <CardExpiryElement
-            options={{
-              style: {
-                base: {
-                  color: "#070707",
-                  fontSize: "16px",
-                  "::placeholder": {
-                    color: "#cccccc",
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-           <br></br>
-        <div className="p-3 rounded-lg border border-white bg-white">
-          <CardCvcElement
-            options={{
-              style: {
-                base: {
-                  color: "#070707",
-                  fontSize: "16px",
-                  "::placeholder": {
-                    color: "#cccccc",
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-      </div>
-        <br></br>
-      <button
-        type="submit"
-        disabled={!stripe || loading}
-        className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition duration-200 mt-6"
-      >
-        {loading ? "Processing..." : "Send Now"}
-      </button>
-
-      {message && (
-        <p className="text-center text-sm text-red-600 mt-4">{message}</p>
-      )}
-    </form>
-  </div>
-</div>
-
+    </div>
   );
 }
