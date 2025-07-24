@@ -75,7 +75,7 @@ export default function CheckoutForm() {
 >
 
         <h2 className="text-2xl font-bold text-center text-black mb-6">
-          Send Money Safe
+          Move Your Funds
         </h2>
 
         <div className="flex flex-col mb-6">
@@ -92,8 +92,9 @@ export default function CheckoutForm() {
         <br></br>
         <div className="flex flex-col mb-6">
           <label className="text-black font-bold text-lg mb-4">Card Details</label>
-
+            
           <div className="flex flex-col gap-4">
+            <br></br>
             <div className="p-3 rounded-lg border border-gray-300 bg-white">
               <CardNumberElement
                 options={{
@@ -113,7 +114,7 @@ export default function CheckoutForm() {
                 }}
               />
             </div>
-
+              <br></br>
             <div className="p-3 rounded-lg border border-gray-300 bg-white">
               <CardExpiryElement
                 options={{
@@ -135,7 +136,7 @@ export default function CheckoutForm() {
                 }}
               />
             </div>
-
+              <br></br>
             <div className="p-3 rounded-lg border border-gray-300 bg-white">
               <CardCvcElement
                 options={{
